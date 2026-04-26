@@ -58,7 +58,7 @@ fun CameraPreviewView(
                             imageAnalysis
                         )
                     } catch (e: Exception) {
-                        onError("Kamera konnte nicht gestartet werden: ${e.message}")
+                        onError("Camera could not start: \n${e.message}")
                     }
 
                 }, ContextCompat.getMainExecutor(ctx))

@@ -1,6 +1,7 @@
 package de.gosmik.greenlens.ui.screen.barcode
 
 import android.Manifest
+import android.content.ClipData
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,14 +18,20 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ClipEntry
+import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -34,6 +41,7 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import de.gosmik.greenlens.ui.components.CameraPreviewView
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -108,7 +116,7 @@ private fun ScannerOverlay() {
                 .border(3.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(12.dp))
         )
         Text(
-            text = "Barcode in den Rahmen halten",
+            text = "Move Barcode in Area",
             color = Color.White,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -119,6 +127,9 @@ private fun ScannerOverlay() {
 
 @Composable
 private fun ScanResultContent(code: String, onReset: () -> Unit) {
+    val clipboardManager = LocalClipboard.current
+    val scope = rememberCoroutineScope()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -133,7 +144,7 @@ private fun ScanResultContent(code: String, onReset: () -> Unit) {
             modifier = Modifier.size(72.dp)
         )
         Spacer(Modifier.height(16.dp))
-        Text("Gescannter Code", style = MaterialTheme.typography.titleMedium)
+        Text("Scanned Code", style = MaterialTheme.typography.titleMedium)
         Spacer(Modifier.height(8.dp))
         Text(
             text = code,
@@ -142,7 +153,19 @@ private fun ScanResultContent(code: String, onReset: () -> Unit) {
         )
         Spacer(Modifier.height(32.dp))
         Button(onClick = onReset) {
-            Text("Erneut scannen")
+            Text("Rescan")
+        }
+        Spacer(Modifier.height(16.dp))
+        OutlinedButton(onClick = {
+            scope.launch {
+                clipboardManager.setClipEntry(
+                    ClipEntry(
+                        ClipData.newPlainText("barcode", code)
+                    )
+                )
+            }
+        }) {
+            Text("Copy")
         }
     }
 }
@@ -161,15 +184,15 @@ private fun PermissionDeniedContent(
     ) {
         Text(
             text = if (shouldShowRationale)
-                "Die App benötigt Kamera-Zugriff um Barcodes zu scannen."
+                "This App needs Camera Access to Scan the Barcode."
             else
-                "Bitte erteile die Kamera-Berechtigung in den Einstellungen.",
+                "Please Grant Camera Access for this App in the Settings.",
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(16.dp))
         if (shouldShowRationale) {
             Button(onClick = onRequestPermission) {
-                Text("Berechtigung erteilen")
+                Text("Grant Access")
             }
         }
     }
