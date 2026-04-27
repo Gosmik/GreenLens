@@ -39,8 +39,10 @@ import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -194,7 +196,11 @@ private fun ScanResultContent(
         verticalArrangement = Arrangement.Center
     ) {
         if (product != null) {
-            Text(product.name ?: "Unknown Product", style = MaterialTheme.typography.headlineSmall)
+            Text(
+                product.name ?: "-",
+                style = MaterialTheme.typography.headlineSmall,
+                textAlign = TextAlign.Center
+            )
             Text(product.brand ?: "", style = MaterialTheme.typography.bodyMedium)
 
             Spacer(Modifier.height(16.dp))
@@ -237,18 +243,24 @@ private fun NutrimentsCard(
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text("Nutritional values per 100g", style = MaterialTheme.typography.titleSmall)
-            Spacer(Modifier.height(8.dp))
 
             val vLabelTag = product?.vlabel?.toDietLabel()
 
             when (vLabelTag) {
-                DietLabel.VEGAN -> Text("🌱 Vegan", color = Color(0xFF4CAF50))
-                DietLabel.VEGETARIAN -> Text("🥚 Vegetarian", color = Color(0xFF8BC34A))
+                DietLabel.VEGAN -> {
+                    Spacer(Modifier.height(16.dp))
+                    Text("🌱 Vegan", color = Color(0xFF4CAF50), fontWeight = FontWeight.Bold, fontSize = 22.sp)
+                    Spacer(Modifier.height(16.dp))
+                }
+                DietLabel.VEGETARIAN -> {
+                    Spacer(Modifier.height(16.dp))
+                    Text("🥚 Vegetarian", color = Color(0xFF8BC34A))
+                    Spacer(Modifier.height(16.dp))
+                }
                 DietLabel.NONE -> {}
                 else -> {}
             }
 
-            Spacer(Modifier.height(8.dp))
             nutriments.caloriesPer100g?.let { Text("Calories: ${it.toInt()} kcal") }
             nutriments.proteinPer100g?.let { Text("Protein: ${it.round2()}g") }
             nutriments.carbsPer100g?.let { Text("Carbohydrates: ${it.round2()}g") }

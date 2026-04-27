@@ -2,6 +2,8 @@ package de.gosmik.greenlens.ui.data.openfoodfacts.repository
 
 import de.gosmik.greenlens.ui.data.openfoodfacts.api.OpenFoodFactsApi
 import de.gosmik.greenlens.ui.data.openfoodfacts.model.Product
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class ProductRepository(
     private val api: OpenFoodFactsApi = OpenFoodFactsApi()
@@ -17,6 +19,16 @@ class ProductRepository(
             }
         } catch (e: Exception) {
             Result.failure(e)
+        }
+    }
+
+    suspend fun searchProducts(query: String): List<Product> {
+        return withContext(Dispatchers.IO) {
+            try {
+                api.searchProducts(query).products
+            } catch (e: Exception) {
+                emptyList()
+            }
         }
     }
 }

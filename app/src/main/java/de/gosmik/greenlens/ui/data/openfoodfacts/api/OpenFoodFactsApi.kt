@@ -8,6 +8,8 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import de.gosmik.greenlens.ui.data.openfoodfacts.model.SearchResponse
+import io.ktor.client.request.parameter
 
 class OpenFoodFactsApi {
 
@@ -22,5 +24,14 @@ class OpenFoodFactsApi {
 
     suspend fun getProduct(barcode: String): ProductResponse {
         return client.get("https://world.openfoodfacts.org/api/v2/product/$barcode.json").body()
+    }
+
+    suspend fun searchProducts(query: String, pageSize: Int = 10): SearchResponse {
+        return client.get("https://de.openfoodfacts.org/cgi/search.pl") {
+            parameter("search_terms", query)
+            parameter("action", "process")
+            parameter("json", 1)
+            parameter("page_size", pageSize)
+        }.body()
     }
 }

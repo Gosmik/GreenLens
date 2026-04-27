@@ -12,7 +12,7 @@ data class ProductResponse(
 
 @Serializable
 data class Product(
-    @SerialName("product_name_en") val name: String? = null,
+    @SerialName("product_name") val name: String? = null,
     @SerialName("brands") val brand: String? = null,
     @SerialName("image_url") val imageUrl: String? = null,
     @SerialName("nutriments") val nutriments: Nutriments? = null,
@@ -26,6 +26,11 @@ data class Nutriments(
     @SerialName("proteins_100g") val proteinPer100g: Double? = null,
     @SerialName("carbohydrates_100g") val carbsPer100g: Double? = null,
     @SerialName("fat_100g") val fatPer100g: Double? = null
+)
+
+@Serializable
+data class SearchResponse(
+    @SerialName("products") val products: List<Product> = emptyList()
 )
 
 enum class DietLabel {
