@@ -1,4 +1,4 @@
-package de.gosmik.greenlens.ui.data.barcode
+package de.gosmik.greenlens.data.barcode
 
 import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis

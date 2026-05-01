@@ -20,8 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import de.gosmik.greenlens.ui.data.openfoodfacts.model.Product
+import de.gosmik.greenlens.data.openfoodfacts.model.Product
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

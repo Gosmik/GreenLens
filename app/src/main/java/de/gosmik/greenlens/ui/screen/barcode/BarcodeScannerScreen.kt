@@ -13,17 +13,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Snackbar
@@ -37,8 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
-import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -50,10 +44,10 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import de.gosmik.greenlens.ui.components.CameraPreviewView
-import de.gosmik.greenlens.ui.data.openfoodfacts.model.DietLabel
-import de.gosmik.greenlens.ui.data.openfoodfacts.model.Nutriments
-import de.gosmik.greenlens.ui.data.openfoodfacts.model.Product
-import de.gosmik.greenlens.ui.data.openfoodfacts.model.toDietLabel
+import de.gosmik.greenlens.data.openfoodfacts.model.DietLabel
+import de.gosmik.greenlens.data.openfoodfacts.model.Nutriments
+import de.gosmik.greenlens.data.openfoodfacts.model.Product
+import de.gosmik.greenlens.data.openfoodfacts.model.toDietLabel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPermissionsApi::class)

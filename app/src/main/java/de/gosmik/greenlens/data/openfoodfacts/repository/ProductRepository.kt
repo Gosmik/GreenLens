@@ -1,8 +1,8 @@
-package de.gosmik.greenlens.ui.data.openfoodfacts.repository
+package de.gosmik.greenlens.data.openfoodfacts.repository
 
 import android.util.Log
-import de.gosmik.greenlens.ui.data.openfoodfacts.api.OpenFoodFactsApi
-import de.gosmik.greenlens.ui.data.openfoodfacts.model.Product
+import de.gosmik.greenlens.data.openfoodfacts.api.OpenFoodFactsApi
+import de.gosmik.greenlens.data.openfoodfacts.model.Product
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext

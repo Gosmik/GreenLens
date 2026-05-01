@@ -2,8 +2,8 @@ package de.gosmik.greenlens.ui.screen.barcode
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import de.gosmik.greenlens.ui.data.openfoodfacts.model.Product
-import de.gosmik.greenlens.ui.data.openfoodfacts.repository.ProductRepository
+import de.gosmik.greenlens.data.openfoodfacts.model.Product
+import de.gosmik.greenlens.data.openfoodfacts.repository.ProductRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

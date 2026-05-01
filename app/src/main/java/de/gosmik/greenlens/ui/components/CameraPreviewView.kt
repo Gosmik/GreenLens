@@ -13,7 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import de.gosmik.greenlens.ui.data.barcode.BarcodeAnalyzer
+import de.gosmik.greenlens.data.barcode.BarcodeAnalyzer
 
 @Composable
 fun CameraPreviewView(

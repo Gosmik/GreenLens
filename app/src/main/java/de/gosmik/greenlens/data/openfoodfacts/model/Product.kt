@@ -1,4 +1,4 @@
-package de.gosmik.greenlens.ui.data.openfoodfacts.model
+package de.gosmik.greenlens.data.openfoodfacts.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
