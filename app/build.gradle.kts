@@ -1,7 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
-    id("org.jetbrains.kotlin.plugin.serialization") version "2.0.0"
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.3.21"
+    id("com.mikepenz.aboutlibraries.plugin")
 }
 
 android {
@@ -85,6 +86,9 @@ dependencies {
 
     // Serialization falls noch nicht vorhanden
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+
+    // Für die Libery Licence
+    implementation("com.mikepenz:aboutlibraries-compose-m3:11.2.3")
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)

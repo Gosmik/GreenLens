@@ -1,8 +1,10 @@
 package de.gosmik.greenlens.ui.data.openfoodfacts.repository
 
+import android.util.Log
 import de.gosmik.greenlens.ui.data.openfoodfacts.api.OpenFoodFactsApi
 import de.gosmik.greenlens.ui.data.openfoodfacts.model.Product
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
 class ProductRepository(
@@ -22,13 +24,19 @@ class ProductRepository(
         }
     }
 
-    suspend fun searchProducts(query: String): List<Product> {
+    suspend fun searchProducts(query: String): Result<List<Product>> {
         return withContext(Dispatchers.IO) {
-            try {
-                api.searchProducts(query).products
-            } catch (e: Exception) {
-                emptyList()
+            var lastException: Exception? = null
+            repeat(3) { attempt ->
+                try {
+                    val result = api.searchProducts(query).products
+                    return@withContext Result.success(result)
+                } catch (e: Exception) {
+                    lastException = e
+                    delay(1000L * (attempt + 1))
+                }
             }
+            Result.failure(lastException ?: Exception("Unbekannter Fehler"))
         }
     }
 }

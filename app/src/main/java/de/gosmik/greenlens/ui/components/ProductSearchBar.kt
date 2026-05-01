@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import de.gosmik.greenlens.ui.data.openfoodfacts.model.Product
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,9 +40,9 @@ fun ProductSearchBar(
         inputField = {
             SearchBarDefaults.InputField(
                 query = query,
-                onQueryChange = {
-                    onQueryChanged(it)
-                    expanded = it.isNotEmpty()
+                onQueryChange = { newQuery ->
+                    onQueryChanged(newQuery)
+                    expanded = newQuery.isNotEmpty()
                 },
                 onSearch = { expanded = false },
                 expanded = expanded,
@@ -67,7 +68,9 @@ fun ProductSearchBar(
         modifier = modifier
     ) {
         if (isSearching) {
-            CircularProgressIndicator(modifier = Modifier.padding(16.dp))
+            CircularProgressIndicator(modifier = Modifier
+                .padding(16.dp)
+            )
         } else {
             results.forEach { product ->
                 ListItem(

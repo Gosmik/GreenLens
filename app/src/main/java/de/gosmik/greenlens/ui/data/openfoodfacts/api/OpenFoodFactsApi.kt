@@ -1,5 +1,6 @@
 package de.gosmik.greenlens.ui.data.openfoodfacts.api
 
+import android.util.Log
 import de.gosmik.greenlens.ui.data.openfoodfacts.model.ProductResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -26,12 +27,22 @@ class OpenFoodFactsApi {
         return client.get("https://world.openfoodfacts.org/api/v2/product/$barcode.json").body()
     }
 
-    suspend fun searchProducts(query: String, pageSize: Int = 10): SearchResponse {
-        return client.get("https://de.openfoodfacts.org/cgi/search.pl") {
+    suspend fun searchProducts(query: String, pageSize: Int = 7): SearchResponse {
+        val httpResponse = client.get("https://world.openfoodfacts.org/cgi/search.pl") {
             parameter("search_terms", query)
+            parameter("search_simple", 1)
             parameter("action", "process")
             parameter("json", 1)
             parameter("page_size", pageSize)
-        }.body()
+            parameter("sort_by", "unique_scans_n")
+            parameter("nocache", 1)
+            parameter("fields", "code,product_name,brands,image_url,nutriments,ingredients_analysis_tags")
+        }
+
+        if (httpResponse.status.value == 503) {
+            throw Exception("Server nicht verfügbar (503)")
+        }
+
+        return httpResponse.body()
     }
 }

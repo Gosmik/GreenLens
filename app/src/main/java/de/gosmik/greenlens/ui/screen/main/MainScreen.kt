@@ -2,7 +2,10 @@ package de.gosmik.greenlens.ui.screen.main
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -11,13 +14,18 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import de.gosmik.greenlens.ui.components.OpenCameraFab
 import de.gosmik.greenlens.ui.components.ProductSearchBar
 import de.gosmik.greenlens.ui.screen.barcode.BarcodeScannerScreen
+import de.gosmik.greenlens.ui.screen.barcode.ScanResultContent
+import de.gosmik.greenlens.ui.screen.license.LicensesScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -26,9 +34,15 @@ fun MainScreen(viewModel: MainViewModel = viewModel(factory = MainViewModelFacto
 
     val context = LocalContext.current
 
+    val selectedProduct by viewModel.selectedProduct.collectAsState()
+
     val searchQuery by viewModel.searchQuery.collectAsState()
     val searchResults by viewModel.searchResults.collectAsState()
     val isSearching by viewModel.isSearching.collectAsState()
+
+    val showLicenses by viewModel.showLicenses.collectAsState()
+
+    var menuExpanded by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.toastEvent.collect { message ->
@@ -36,9 +50,17 @@ fun MainScreen(viewModel: MainViewModel = viewModel(factory = MainViewModelFacto
         }
     }
 
-    if (showBarcodeScanner) {
+    if (showLicenses) {
+        LicensesScreen(onDismiss = { viewModel.onLicensesDismissed() })
+    } else if (showBarcodeScanner) {
         BarcodeScannerScreen(
             onDismiss = { viewModel.onBarcodeScannerDismissed() }
+        )
+    } else if (selectedProduct != null) {
+        ScanResultContent(
+            code = "",
+            product = selectedProduct,
+            onReset = { viewModel.onProductDismissed() }
         )
     } else {
         Scaffold(
@@ -47,8 +69,29 @@ fun MainScreen(viewModel: MainViewModel = viewModel(factory = MainViewModelFacto
                     title = { Text("Green Lens") },
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        titleContentColor = MaterialTheme.colorScheme.primary
-                    )
+                        titleContentColor = MaterialTheme.colorScheme.primary,
+                        actionIconContentColor = MaterialTheme.colorScheme.primary
+                    ),
+                    actions = {
+                        IconButton(onClick = { menuExpanded = true }) {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = "Menü"
+                            )
+                        }
+                        DropdownMenu(
+                            expanded = menuExpanded,
+                            onDismissRequest = { menuExpanded = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("Licenses") },
+                                onClick = {
+                                    menuExpanded = false
+                                    viewModel.onOpenLicenses()
+                                }
+                            )
+                        }
+                    }
                 )
             },
             floatingActionButton = {
@@ -58,8 +101,8 @@ fun MainScreen(viewModel: MainViewModel = viewModel(factory = MainViewModelFacto
             Column(
                 modifier = Modifier
                     .padding(innerPadding)
-                    .padding(horizontal = 8.dp)
-                    .padding(vertical = 4.dp)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 ProductSearchBar(
                     query = searchQuery,
@@ -67,7 +110,7 @@ fun MainScreen(viewModel: MainViewModel = viewModel(factory = MainViewModelFacto
                     isSearching = isSearching,
                     onQueryChanged = viewModel::onSearchQueryChanged,
                     onProductSelected = { product ->
-                        //TODO what happens on product click
+                        viewModel.onProductSelected(product)
                     },
                     onCleared = viewModel::onSearchCleared
                 )

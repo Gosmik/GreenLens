@@ -179,13 +179,15 @@ private fun PermissionDeniedContent(
 }
 
 @Composable
-private fun ScanResultContent(
+fun ScanResultContent(
     code: String,
     product: Product?,
     onReset: () -> Unit
 ) {
     val clipboardManager = LocalClipboard.current
     val scope = rememberCoroutineScope()
+
+    BackHandler { onReset() }
 
     Column(
         modifier = Modifier
@@ -234,7 +236,7 @@ private fun ScanResultContent(
 }
 
 @Composable
-private fun NutrimentsCard(
+fun NutrimentsCard(
     nutriments: Nutriments,
     product: Product?
 ) {
@@ -254,7 +256,7 @@ private fun NutrimentsCard(
                 }
                 DietLabel.VEGETARIAN -> {
                     Spacer(Modifier.height(16.dp))
-                    Text("🥚 Vegetarian", color = Color(0xFF8BC34A))
+                    Text("🥚 Vegetarian", color = Color(0xFF8BC34A), fontWeight = FontWeight.Bold, fontSize = 22.sp)
                     Spacer(Modifier.height(16.dp))
                 }
                 DietLabel.NONE -> {}
