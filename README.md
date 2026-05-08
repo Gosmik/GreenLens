@@ -1,8 +1,18 @@
-# 🌿 GreenLens
+# Green Lens
 
-An Android app that lets you scan product barcodes or search for products to view nutritional information and dietary labels (vegan/vegetarian).
+<p align="center">
+  <strong>An Android app that lets you scan product barcodes or search for products to view nutritional information and dietary labels (vegan/vegetarian).</strong>
+</p>
 
----
+<p align="center">
+  <a href="https://www.android.com/"><img src="https://img.shields.io/badge/Platform-Android-3DDC84?style=flat&logo=android&logoColor=white" alt="Platform"></a>
+  <a href="https://developer.android.com/about/versions/oreo/"><img src="https://img.shields.io/badge/Min%20SDK-26-blue?style=flat" alt="Min SDK"></a>
+  <a href="https://kotlinlang.org/"><img src="https://img.shields.io/badge/Kotlin-2.2.21-7F52FF?style=flat&logo=kotlin&logoColor=white" alt="Kotlin"></a>
+  <a href="https://developer.android.com/jetpack/compose"><img src="https://img.shields.io/badge/Jetpack%20Compose-Material%203-4285F4?style=flat&logo=jetpackcompose&logoColor=white" alt="Compose"></a>
+  <a href="https://developer.android.com/studio/releases/platforms"><img src="https://img.shields.io/badge/Target%20SDK-36-blue?style=flat" alt="Target SDK"></a>
+  <a href="https://developer.android.com/studio/releases/build-tools"><img src="https://img.shields.io/badge/Compile%20SDK-36-blue?style=flat" alt="Compile SDK"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-GPLv3-blue?style=flat" alt="License"></a>
+</p>
 
 ## 📱 Features
 
@@ -34,10 +44,9 @@ An Android app that lets you scan product barcodes or search for products to vie
 The app follows the **MVVM (Model-View-ViewModel)** architecture pattern.
 
 ```
-app/
+de.gosmik.greenlens/
 ├── data/
 │   ├── barcode/
-│   │   └── BarcodeAnalyzer.kt
 │   └── openfoodfacts/
 │       ├── model/
 │       ├── api/
@@ -47,7 +56,8 @@ app/
     │   ├── main/
     │   ├── barcode/
     │   └── licenses/
-    └── components/
+    ├── components/
+    └── theme/
 ```
 
 ---
@@ -64,7 +74,7 @@ app/
 
 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/greenlens.git
+git clone https://github.com/gomsik/greenlens.git
 ```
 
 2. Open the project in Android Studio
