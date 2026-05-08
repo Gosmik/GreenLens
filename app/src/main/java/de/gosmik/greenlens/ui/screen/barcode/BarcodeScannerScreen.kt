@@ -17,11 +17,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.FlashOff
+import androidx.compose.material.icons.filled.FlashOn
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -49,6 +55,7 @@ import de.gosmik.greenlens.data.openfoodfacts.model.Nutriments
 import de.gosmik.greenlens.data.openfoodfacts.model.Product
 import de.gosmik.greenlens.data.openfoodfacts.model.toDietLabel
 import kotlinx.coroutines.launch
+import androidx.compose.material3.Icon
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -59,6 +66,8 @@ fun BarcodeScannerScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val cameraPermission = rememberPermissionState(Manifest.permission.CAMERA)
+
+    val torchEnabled by viewModel.torchEnabled.collectAsStateWithLifecycle()
 
     BackHandler {
         onDismiss()
@@ -99,13 +108,17 @@ fun BarcodeScannerScreen(
             else -> {
                 CameraPreviewView(
                     isScanning = uiState.isScanning,
+                    torchEnabled = torchEnabled,
                     onBarcodeDetected = viewModel::onBarcodeDetected,
                     onError = viewModel::onError,
                     modifier = Modifier.fillMaxSize()
                 )
 
                 // Overlay: Suchrahmen
-                ScannerOverlay()
+                ScannerOverlay(
+                    torchEnabled = torchEnabled,
+                    onTorchToggled = viewModel::onTorchToggled
+                )
 
                 // Fehler anzeigen
                 uiState.error?.let { error ->
@@ -123,9 +136,28 @@ fun BarcodeScannerScreen(
 // --- Hilfs-Composables ---
 
 @Composable
-private fun ScannerOverlay() {
+private fun ScannerOverlay(
+    torchEnabled: Boolean,
+    onTorchToggled: () -> Unit,
+) {
     Box(modifier = Modifier.fillMaxSize()) {
 
+        IconButton(
+            onClick = onTorchToggled,
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(16.dp)
+                .padding(top = 60.dp)
+        ) {
+            Icon(
+                imageVector = if (torchEnabled)
+                    Icons.Default.FlashOn
+                else
+                    Icons.Default.FlashOff,
+                contentDescription = "Torch",
+                tint = if (torchEnabled) Color.Yellow else Color.White
+            )
+        }
         Box(
             modifier = Modifier
                 //.size(250.dp)
@@ -244,16 +276,63 @@ fun NutrimentsCard(
 
             when (vLabelTag) {
                 DietLabel.VEGAN -> {
-                    Spacer(Modifier.height(16.dp))
-                    Text("🌱 Vegan", color = Color(0xFF4CAF50), fontWeight = FontWeight.Bold, fontSize = 22.sp)
-                    Spacer(Modifier.height(16.dp))
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        "🌱 Vegan",
+                        color = Color(0xFF4CAF50),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 22.sp
+                    )
+                    Spacer(Modifier.height(8.dp))
+                }
+                DietLabel.VEGETARIAN_MAYBE_VEGAN -> {
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        "🌱 Vegetarian (maybe Vegan)",
+                        color = Color(0xFF8BC34A),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 22.sp
+                    )
+                    Spacer(Modifier.height(8.dp))
                 }
                 DietLabel.VEGETARIAN -> {
-                    Spacer(Modifier.height(16.dp))
-                    Text("🥚 Vegetarian", color = Color(0xFF8BC34A), fontWeight = FontWeight.Bold, fontSize = 22.sp)
-                    Spacer(Modifier.height(16.dp))
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        "🥚 Vegetarian",
+                        color = Color(0xFF8BC34A),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 22.sp
+                    )
+                    Spacer(Modifier.height(8.dp))
                 }
-                DietLabel.NONE -> {}
+                DietLabel.MAYBE_VEGETARIAN -> {
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        "🥚 Maybe Vegetarian",
+                        color = Color(0xFFFFC107),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 22.sp)
+                    Spacer(Modifier.height(8.dp))
+                }
+                DietLabel.NOT_VEGETARIAN -> {
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        "❌ Not Vegetarian",
+                        color = Color(0xFFF44336),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 22.sp)
+                    Spacer(Modifier.height(8.dp))
+                }
+                DietLabel.UNKNOWN -> {
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        "❓ Unknown",
+                        color = Color.Gray,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 22.sp
+                    )
+                    Spacer(Modifier.height(8.dp))
+                }
                 else -> {}
             }
 

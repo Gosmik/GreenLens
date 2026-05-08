@@ -18,7 +18,6 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="Green Lens"
             android:theme="@style/Theme.GreenLens">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

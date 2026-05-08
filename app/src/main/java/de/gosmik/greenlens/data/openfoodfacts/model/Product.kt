@@ -35,16 +35,27 @@ data class SearchResponse(
 
 enum class DietLabel {
     VEGAN,
+    VEGETARIAN_MAYBE_VEGAN,
     VEGETARIAN,
-    NONE;
+    MAYBE_VEGETARIAN,
+    UNKNOWN,
+    NOT_VEGETARIAN
 }
 
 fun List<String>.toDietLabel(): DietLabel {
+    val isVegan = any { it == "en:vegan" }
+    val isMaybeVegan = any { it == "en:maybe-vegan" }
+
+    val isVegetarian = any { it == "en:vegetarian" }
+    val isMaybeVegetarian = any { it == "en:maybe-vegetarian" }
+    val isNonVegetarian = any { it == "en:non-vegetarian" }
+
     return when {
-        any { it.contains("non-vegetarian") } -> DietLabel.NONE
-        any { it.contains("non-vegan") } -> DietLabel.VEGETARIAN
-        any { it.contains("vegan") } -> DietLabel.VEGAN
-        any { it.contains("vegetarian") } -> DietLabel.VEGETARIAN
-        else -> DietLabel.NONE
+        isVegan -> DietLabel.VEGAN
+        isVegetarian && isMaybeVegan -> DietLabel.VEGETARIAN_MAYBE_VEGAN
+        isVegetarian -> DietLabel.VEGETARIAN
+        isMaybeVegetarian -> DietLabel.MAYBE_VEGETARIAN
+        isNonVegetarian -> DietLabel.NOT_VEGETARIAN
+        else -> DietLabel.UNKNOWN
     }
 }

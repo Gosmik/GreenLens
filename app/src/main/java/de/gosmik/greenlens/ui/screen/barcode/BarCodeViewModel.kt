@@ -23,6 +23,9 @@ class BarcodeScannerViewModel(private val repository: ProductRepository = Produc
     private val _uiState = MutableStateFlow(BarcodeScannerUiState())
     val uiState: StateFlow<BarcodeScannerUiState> = _uiState.asStateFlow()
 
+    private val _torchEnabled = MutableStateFlow(false)
+    val torchEnabled: StateFlow<Boolean> = _torchEnabled.asStateFlow()
+
     fun onBarcodeDetected(code: String) {
         if (!_uiState.value.isScanning) return
 
@@ -53,5 +56,9 @@ class BarcodeScannerViewModel(private val repository: ProductRepository = Produc
         _uiState.update {
             BarcodeScannerUiState()
         }
+    }
+
+    fun onTorchToggled() {
+        _torchEnabled.update { !it }
     }
 }
