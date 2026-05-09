@@ -1,6 +1,9 @@
 package de.gosmik.greenlens.ui.components
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
@@ -20,7 +23,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
 import de.gosmik.greenlens.data.openfoodfacts.model.Product
+import de.gosmik.greenlens.data.openfoodfacts.model.SearchFilter
+import androidx.compose.foundation.lazy.items
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,6 +36,8 @@ fun ProductSearchBar(
     query: String,
     results: List<Product>,
     isSearching: Boolean,
+    selectedFilter: SearchFilter,
+    onFilterSelected: (SearchFilter) -> Unit,
     onQueryChanged: (String) -> Unit,
     onProductSelected: (Product) -> Unit,
     onCleared: () -> Unit,
@@ -41,11 +51,13 @@ fun ProductSearchBar(
                 query = query,
                 onQueryChange = { newQuery ->
                     onQueryChanged(newQuery)
-                    expanded = newQuery.isNotEmpty()
+                    expanded = true
                 },
                 onSearch = { expanded = false },
                 expanded = expanded,
-                onExpandedChange = { expanded = it },
+                onExpandedChange = { isExpanded ->
+                    expanded = isExpanded
+                },
                 placeholder = { Text("Search products...") },
                 leadingIcon = {
                     Icon(Icons.Default.Search, contentDescription = null)
@@ -66,6 +78,26 @@ fun ProductSearchBar(
         onExpandedChange = { expanded = it },
         modifier = modifier
     ) {
+        if (expanded) {
+            BackHandler {
+                expanded = false
+            }
+        }
+        LazyRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(SearchFilter.entries) { filter ->
+                FilterChip(
+                    selected = selectedFilter == filter,
+                    onClick = { onFilterSelected(filter) },
+                    label = { Text(filter.label) }
+                )
+            }
+        }
+        HorizontalDivider()
         if (isSearching) {
             CircularProgressIndicator(modifier = Modifier
                 .padding(16.dp)
@@ -77,7 +109,7 @@ fun ProductSearchBar(
                     supportingContent = { Text(product.brand ?: "") },
                     modifier = Modifier.clickable {
                         onProductSelected(product)
-                        expanded = false
+                        expanded = true
                     }
                 )
             }

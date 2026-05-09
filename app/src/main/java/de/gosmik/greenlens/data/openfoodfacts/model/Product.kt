@@ -45,7 +45,6 @@ enum class DietLabel {
 fun List<String>.toDietLabel(): DietLabel {
     val isVegan = any { it == "en:vegan" }
     val isMaybeVegan = any { it == "en:maybe-vegan" }
-
     val isVegetarian = any { it == "en:vegetarian" }
     val isMaybeVegetarian = any { it == "en:maybe-vegetarian" }
     val isNonVegetarian = any { it == "en:non-vegetarian" }

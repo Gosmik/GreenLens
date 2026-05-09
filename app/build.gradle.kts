@@ -90,6 +90,9 @@ dependencies {
     // Für die Libery Licence
     implementation("com.mikepenz:aboutlibraries-compose-m3:11.2.3")
 
+    // Für den Splash Screen
+    implementation("androidx.core:core-splashscreen:1.0.1")
+
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)

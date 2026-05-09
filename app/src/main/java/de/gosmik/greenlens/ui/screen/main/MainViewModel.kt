@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import de.gosmik.greenlens.data.openfoodfacts.model.Product
+import de.gosmik.greenlens.data.openfoodfacts.model.SearchFilter
 import de.gosmik.greenlens.data.openfoodfacts.repository.ProductRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,8 +13,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.onSuccess
@@ -42,26 +46,46 @@ class MainViewModel(private val repository: ProductRepository) : ViewModel() {
     private val _showLicenses = MutableStateFlow(false)
     val showLicenses: StateFlow<Boolean> = _showLicenses.asStateFlow()
 
+    private val _searchError = MutableStateFlow<Throwable?>(null)
+    val searchError: StateFlow<Throwable?> = _searchError.asStateFlow()
+
+    private val _selectedFilter = MutableStateFlow(SearchFilter.MOST_SCANNED)
+    val selectedFilter: StateFlow<SearchFilter> = _selectedFilter.asStateFlow()
+
     init {
         viewModelScope.launch {
-            _searchQuery
-                .debounce(600)
-                .filter { it.length >= 2 }
-                .collectLatest { query ->
+            combine(_searchQuery, _selectedFilter) { query, filter -> query to filter }
+                .map { (query, filter) -> query.trim() to filter }
+                .debounce(1000)
+                .distinctUntilChanged()
+                .filter { (query, _) -> query.length >= 2 }
+                .collectLatest { (query, filter) ->
+                    val cached = repository.getCachedSuggestions(query, filter)
+                    if (cached != null) {
+                        _searchResults.value = cached
+                        return@collectLatest
+                    }
+                    _isSearching.value = true
                     try {
-                        _isSearching.value = true
-                        repository.searchProducts(query)
-                            .onSuccess { products ->
-                                _searchResults.value = products
+                        val products = repository.searchProducts(query, filter)
+                            .getOrElse { error ->
+                                _searchError.value = error
+                                null
                             }
-                            .onFailure { error ->
-                                _searchResults.value = emptyList()
-                            }
+                        if (products != null) {
+                            _searchResults.value = products
+                            repository.cacheSuggestions(query, filter, products)
+                        }
                     } finally {
                         _isSearching.value = false
                     }
                 }
         }
+    }
+
+    fun onFilterSelected(filter: SearchFilter) {
+        _selectedFilter.value = filter
+        _searchResults.value = emptyList()
     }
 
     fun onProductSelected(product: Product) {
