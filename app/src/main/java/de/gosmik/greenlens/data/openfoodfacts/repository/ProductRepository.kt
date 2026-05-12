@@ -1,6 +1,5 @@
 package de.gosmik.greenlens.data.openfoodfacts.repository
 
-import android.util.Log
 import de.gosmik.greenlens.data.openfoodfacts.api.OpenFoodFactsApi
 import de.gosmik.greenlens.data.openfoodfacts.model.Product
 import de.gosmik.greenlens.data.openfoodfacts.model.SearchFilter

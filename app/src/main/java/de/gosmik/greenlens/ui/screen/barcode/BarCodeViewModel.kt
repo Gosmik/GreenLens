@@ -1,6 +1,5 @@
 package de.gosmik.greenlens.ui.screen.barcode
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import de.gosmik.greenlens.data.openfoodfacts.model.Product

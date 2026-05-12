@@ -26,7 +26,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import de.gosmik.greenlens.ui.components.OpenCameraFab
 import de.gosmik.greenlens.ui.components.ProductSearchBar
 import de.gosmik.greenlens.ui.screen.barcode.BarcodeScannerScreen
-import de.gosmik.greenlens.ui.screen.barcode.ScanResultContent
+import de.gosmik.greenlens.ui.screen.barcode.ScanResultScreen
 import de.gosmik.greenlens.ui.screen.license.LicensesScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -63,7 +63,7 @@ fun MainScreen(viewModel: MainViewModel = viewModel(factory = MainViewModelFacto
             onDismiss = { viewModel.onBarcodeScannerDismissed() }
         )
     } else if (selectedProduct != null) {
-        ScanResultContent(
+        ScanResultScreen(
             code = "",
             product = selectedProduct,
             onReset = { viewModel.onProductDismissed() }

@@ -1,6 +1,5 @@
 package de.gosmik.greenlens.ui.screen.main
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import de.gosmik.greenlens.data.openfoodfacts.model.Product
@@ -20,8 +19,6 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.onSuccess
-import kotlin.onFailure
 
 class MainViewModel(private val repository: ProductRepository) : ViewModel() {
 

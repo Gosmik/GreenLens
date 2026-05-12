@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModelProvider
 import de.gosmik.greenlens.data.openfoodfacts.api.OpenFoodFactsApi
 import de.gosmik.greenlens.data.openfoodfacts.repository.ProductRepository
 
-// ViewModelFactory.kt
 class MainViewModelFactory : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         val api = OpenFoodFactsApi()
