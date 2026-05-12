@@ -2,7 +2,11 @@ package de.gosmik.greenlens.ui.screen.barcode
 
 import android.Manifest
 import android.content.ClipData
+import android.content.Intent
+import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -56,6 +60,9 @@ import de.gosmik.greenlens.data.openfoodfacts.model.Product
 import de.gosmik.greenlens.data.openfoodfacts.model.toDietLabel
 import kotlinx.coroutines.launch
 import androidx.compose.material3.Icon
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.net.toUri
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -69,8 +76,14 @@ fun BarcodeScannerScreen(
 
     val torchEnabled by viewModel.torchEnabled.collectAsStateWithLifecycle()
 
+    val scope = rememberCoroutineScope()
+
     BackHandler {
-        onDismiss()
+        scope.launch {
+            viewModel.onDismiss()
+            delay(10)
+            onDismiss()
+        }
     }
 
     LaunchedEffect(Unit) {
@@ -99,6 +112,10 @@ fun BarcodeScannerScreen(
                     ScanResultContent(
                         code = uiState.scannedCode!!,
                         onReset = { viewModel.resetScanner() },
+                        onDismiss = {
+                            viewModel.onDismiss()
+                            onDismiss()
+                        },
                         product = uiState.product
                     )
                 }
@@ -108,8 +125,8 @@ fun BarcodeScannerScreen(
             else -> {
                 CameraPreviewView(
                     isScanning = uiState.isScanning,
-                    torchEnabled = torchEnabled,
                     onBarcodeDetected = viewModel::onBarcodeDetected,
+                    onCameraReady = viewModel::onCameraReady,
                     onError = viewModel::onError,
                     modifier = Modifier.fillMaxSize()
                 )
@@ -160,7 +177,6 @@ private fun ScannerOverlay(
         }
         Box(
             modifier = Modifier
-                //.size(250.dp)
                 .width(250.dp)
                 .height(125.dp)
                 .align(Alignment.Center)
@@ -208,12 +224,14 @@ private fun PermissionDeniedContent(
 fun ScanResultContent(
     code: String,
     product: Product?,
-    onReset: () -> Unit
+    onReset: () -> Unit,
+    onDismiss: () -> Unit = onReset
 ) {
     val clipboardManager = LocalClipboard.current
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
-    BackHandler { onReset() }
+    BackHandler { onDismiss() }
 
     Column(
         modifier = Modifier
@@ -257,6 +275,21 @@ fun ScanResultContent(
                     )
                 }
             }) { Text("Copy") }
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            val productUrl = if (code.isNotBlank()) {
+                "https://world.openfoodfacts.org/product/$code"
+            } else {
+                product?.url
+            }
+            productUrl?.let { url ->
+                OutlinedButton(onClick = {
+                    val intent = Intent(Intent.ACTION_VIEW, url.toUri())
+                    context.startActivity(intent)
+                }) {
+                    Text("Open URL")
+                }
+            }
         }
     }
 }
@@ -340,6 +373,56 @@ fun NutrimentsCard(
             nutriments.proteinPer100g?.let { Text("Protein: ${it.round2()}g") }
             nutriments.carbsPer100g?.let { Text("Carbohydrates: ${it.round2()}g") }
             nutriments.fatPer100g?.let { Text("Fat: ${it.round2()}g") }
+
+            product?.nutriScore
+                ?.takeIf { it.isNotBlank() && it != "not-applicable" && it != "unknown" }
+                ?.let { score ->
+                    Spacer(Modifier.height(16.dp))
+                    NutriScoreBar(score = score.uppercase())
+                }
+        }
+    }
+}
+
+@Composable
+fun NutriScoreBar(score: String) {
+    val grades = listOf("A", "B", "C", "D", "E")
+    val colors = mapOf(
+        "A" to Color(0xFF2d7e43),
+        "B" to Color(0xFF95bb3a),
+        "C" to Color(0xFFf0ca0f),
+        "D" to Color(0xFFd27b19),
+        "E" to Color(0xFFc53318)
+    )
+
+    Text("Nutri-Score", style = MaterialTheme.typography.labelMedium)
+    Spacer(Modifier.height(8.dp))
+
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        grades.forEach { grade ->
+            val isActive = grade == score
+            val color = colors[grade] ?: Color.Gray
+
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .weight(1f)
+                    .height(if (isActive) 40.dp else 32.dp)
+                    .background(
+                        color = if (isActive) color else color.copy(alpha = 0.3f),
+                        shape = RoundedCornerShape(6.dp)
+                    )
+            ) {
+                Text(
+                    text = grade,
+                    color = if (isActive) Color.White else Color.White.copy(alpha = 0.6f),
+                    fontWeight = if (isActive) FontWeight.Bold else FontWeight.Normal,
+                    fontSize = if (isActive) 16.sp else 13.sp
+                )
+            }
         }
     }
 }

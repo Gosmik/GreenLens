@@ -16,7 +16,9 @@ data class Product(
     @SerialName("brands") val brand: String? = null,
     @SerialName("image_url") val imageUrl: String? = null,
     @SerialName("nutriments") val nutriments: Nutriments? = null,
-    @SerialName("ingredients_analysis_tags") val vlabel: List<String> = emptyList()
+    @SerialName("ingredients_analysis_tags") val vlabel: List<String> = emptyList(),
+    @SerialName("url") val url: String? = null,
+    @SerialName("nutriscore_grade") val nutriScore: String? = null
 )
 
 @Serializable

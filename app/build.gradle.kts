@@ -65,13 +65,14 @@ dependencies {
     // For Jetpack Compose integration
     implementation("androidx.camera:camera-compose:1.6.0")
 
-    // For permission handling (optional but recommended)
+    // For permission handling
     implementation("com.google.accompanist:accompanist-permissions:0.33.2-alpha")
 
     // Ktor
     implementation("io.ktor:ktor-client-android:2.3.7")
     implementation("io.ktor:ktor-client-content-negotiation:2.3.7")
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.7")
+    implementation(libs.androidx.material3)
 
     // Kotlinx Serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
@@ -80,11 +81,11 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
 
-    // Retrofit falls noch nicht vorhanden
+    // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
 
-    // Serialization falls noch nicht vorhanden
+    // Serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
     // Für die Libery Licence
@@ -92,6 +93,8 @@ dependencies {
 
     // Für den Splash Screen
     implementation("androidx.core:core-splashscreen:1.0.1")
+
+    implementation("androidx.compose.material3:material3:1.4.0")
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)

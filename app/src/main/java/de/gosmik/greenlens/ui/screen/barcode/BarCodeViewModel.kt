@@ -1,9 +1,11 @@
 package de.gosmik.greenlens.ui.screen.barcode
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import de.gosmik.greenlens.data.openfoodfacts.model.Product
 import de.gosmik.greenlens.data.openfoodfacts.repository.ProductRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,17 +28,28 @@ class BarcodeScannerViewModel(private val repository: ProductRepository = Produc
     private val _torchEnabled = MutableStateFlow(false)
     val torchEnabled: StateFlow<Boolean> = _torchEnabled.asStateFlow()
 
+    private var activeCamera: androidx.camera.core.Camera? = null
+
+    fun onCameraReady(camera: androidx.camera.core.Camera) {
+        activeCamera = camera
+        viewModelScope.launch {
+            delay(100)
+            activeCamera?.cameraControl?.enableTorch(false)
+            _torchEnabled.update { false }
+        }
+    }
+
+    fun onTorchToggled() {
+        val newValue = !_torchEnabled.value
+        _torchEnabled.update { newValue }
+        activeCamera?.cameraControl?.enableTorch(newValue)
+    }
+
     fun onBarcodeDetected(code: String) {
         if (!_uiState.value.isScanning) return
-
-        _uiState.update {
-            it.copy(
-                scannedCode = code,
-                isScanning = false,
-                isLoading = true
-            )
-        }
-
+        activeCamera?.cameraControl?.enableTorch(false)
+        _torchEnabled.update { false }
+        _uiState.update { it.copy(scannedCode = code, isScanning = false, isLoading = true) }
         viewModelScope.launch {
             repository.getProduct(code)
                 .onSuccess { product ->
@@ -53,12 +66,18 @@ class BarcodeScannerViewModel(private val repository: ProductRepository = Produc
     }
 
     fun resetScanner() {
-        _uiState.update {
-            BarcodeScannerUiState()
+        activeCamera?.cameraControl?.enableTorch(false)
+        _torchEnabled.update { false }
+        activeCamera = null
+        viewModelScope.launch {
+            delay(100)
+            _uiState.update { BarcodeScannerUiState() }
         }
     }
 
-    fun onTorchToggled() {
-        _torchEnabled.update { !it }
+    fun onDismiss() {
+        activeCamera?.cameraControl?.enableTorch(false)
+        _torchEnabled.update { false }
+        activeCamera = null
     }
 }

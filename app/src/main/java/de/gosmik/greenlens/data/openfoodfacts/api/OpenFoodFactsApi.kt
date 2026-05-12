@@ -37,7 +37,7 @@ class OpenFoodFactsApi {
             parameter("sort_by", filter.apiValue)
             parameter("sort_by", "unique_scans_n")
             parameter("nocache", 1)
-            parameter("fields", "code,product_name,brands,image_url,nutriments,ingredients_analysis_tags")
+            parameter("fields", "code,product_name,brands,image_url,nutriments,ingredients_analysis_tags,nutriscore_grade,url")
         }
 
         if (httpResponse.status.value == 503) {

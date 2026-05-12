@@ -3,6 +3,7 @@ package de.gosmik.greenlens.ui.components
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -29,6 +30,9 @@ import androidx.compose.material3.HorizontalDivider
 import de.gosmik.greenlens.data.openfoodfacts.model.Product
 import de.gosmik.greenlens.data.openfoodfacts.model.SearchFilter
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.StrokeCap
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -99,9 +103,17 @@ fun ProductSearchBar(
         }
         HorizontalDivider()
         if (isSearching) {
-            CircularProgressIndicator(modifier = Modifier
-                .padding(16.dp)
-            )
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.padding(16.dp),
+                    color = MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                    strokeCap = StrokeCap.Round
+                )
+            }
         } else {
             results.forEach { product ->
                 ListItem(
